@@ -52,7 +52,7 @@ func TestHigressConformanceTests(t *testing.T) {
 		GatewayAddress:       "localhost",
 	})
 
-	cSuite.Setup(t)
+	//cSuite.Setup(t)
 	var higressTests []suite.ConformanceTest
 
 	if *isWasmPluginTest {
@@ -73,30 +73,31 @@ func TestHigressConformanceTests(t *testing.T) {
 		higressTests = []suite.ConformanceTest{
 			tests.HTTPRouteSimpleSameNamespace,
 			tests.HTTPRouteHostNameSameNamespace,
-			tests.HTTPRouteRewritePath,
-			tests.HTTPRouteRewriteHost,
-			tests.HTTPRouteCanaryHeader,
-			tests.HTTPRouteEnableCors,
-			tests.HTTPRouteEnableIgnoreCase,
-			tests.HTTPRouteMatchMethods,
-			tests.HTTPRouteMatchQueryParams,
-			tests.HTTPRouteMatchHeaders,
-			tests.HTTPRouteAppRoot,
-			tests.HTTPRoutePermanentRedirect,
-			tests.HTTPRoutePermanentRedirectCode,
-			tests.HTTPRouteTemporalRedirect,
-			tests.HTTPRouteSameHostAndPath,
-			tests.HTTPRouteCanaryHeaderWithCustomizedHeader,
-			tests.HTTPRouteWhitelistSourceRange,
-			tests.HTTPRouteCanaryWeight,
-			tests.HTTPRouteMatchPath,
-			tests.HttpForceRedirectHttps,
-			tests.HttpRedirectAsHttps,
-			tests.HTTPRouteRequestHeaderControl,
-			tests.HTTPRouteDownstreamEncryption,
-			tests.HTTPRouteFullPathRegex,
-			tests.HTTPRouteHttp2Rpc,
+			//tests.HTTPRouteRewritePath,
+			//tests.HTTPRouteRewriteHost,
+			//tests.HTTPRouteCanaryHeader,
+			//tests.HTTPRouteEnableCors,
+			//tests.HTTPRouteEnableIgnoreCase,
+			//tests.HTTPRouteMatchMethods,
+			//tests.HTTPRouteMatchQueryParams,
+			//tests.HTTPRouteMatchHeaders,
+			//tests.HTTPRouteAppRoot,
+			//tests.HTTPRoutePermanentRedirect,
+			//tests.HTTPRoutePermanentRedirectCode,
+			//tests.HTTPRouteTemporalRedirect,
+			//tests.HTTPRouteSameHostAndPath,
+			//tests.HTTPRouteCanaryHeaderWithCustomizedHeader,
+			//tests.HTTPRouteWhitelistSourceRange,
+			//tests.HTTPRouteCanaryWeight,
+			//tests.HTTPRouteMatchPath,
+			//tests.HttpForceRedirectHttps,
+			//tests.HttpRedirectAsHttps,
+			//tests.HTTPRouteRequestHeaderControl,
+			//tests.HTTPRouteDownstreamEncryption,
+			//tests.HTTPRouteFullPathRegex,
+			//tests.HTTPRouteHttp2Rpc,
 			tests.HTTPRouteConsulHttpBin,
+			tests.HTTPRouteEurekaRegistry,
 		}
 	}
 

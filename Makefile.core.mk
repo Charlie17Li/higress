@@ -212,7 +212,7 @@ gateway-conformance-test:
 
 # higress-conformance-test runs ingress api conformance tests.
 .PHONY: higress-conformance-test
-higress-conformance-test: $(tools/kind) delete-cluster create-cluster docker-build kube-load-image install-dev run-higress-e2e-test delete-cluster
+higress-conformance-test: $(tools/kind) delete-cluster create-cluster docker-build kube-load-image install-dev run-higress-e2e-test
 
 # higress-wasmplugin-test runs ingress wasmplugin tests.
 .PHONY: higress-wasmplugin-test
@@ -238,11 +238,14 @@ kube-load-image: $(tools/kind) ## Install the Higress image to a kind cluster us
 	tools/hack/docker-pull-image.sh registry.cn-hangzhou.aliyuncs.com/hinsteny/dubbo-provider-demo 0.0.1
 	tools/hack/docker-pull-image.sh registry.cn-hangzhou.aliyuncs.com/hinsteny/nacos-standlone-rc3 1.0.0-RC3
 	tools/hack/docker-pull-image.sh docker.io/hashicorp/consul 1.16.0
+	tools/hack/docker-pull-image.sh docker.io/charlie1380/eureka-registry-provider v0.2.0
+	tools/hack/docker-pull-image.sh docker.io/bitinit/eureka latest
 	tools/hack/docker-pull-image.sh registry.cn-hangzhou.aliyuncs.com/2456868764/httpbin 1.0.2
 	tools/hack/kind-load-image.sh registry.cn-hangzhou.aliyuncs.com/hinsteny/dubbo-provider-demo 0.0.1
 	tools/hack/kind-load-image.sh registry.cn-hangzhou.aliyuncs.com/hinsteny/nacos-standlone-rc3 1.0.0-RC3
 	tools/hack/kind-load-image.sh docker.io/hashicorp/consul 1.16.0
-	tools/hack/kind-load-image.sh registry.cn-hangzhou.aliyuncs.com/2456868764/httpbin 1.0.2
+	tools/hack/kind-load-image.sh docker.io/charlie1380/eureka-registry-provider v0.2.0
+	tools/hack/kind-load-image.sh docker.io/bitinit/eureka latest
 # run-higress-e2e-test starts to run ingress e2e tests.
 .PHONY: run-higress-e2e-test
 run-higress-e2e-test:

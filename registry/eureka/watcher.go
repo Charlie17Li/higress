@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -194,9 +195,6 @@ func (w *watcher) doFullRefresh() {
 }
 
 func (w *watcher) subscribe(service *fargo.Application) error {
-	w.mutex.Lock()
-	defer w.mutex.Unlock()
-
 	if _, ok := w.WatchingServices[service.Name]; !ok {
 		w.watchers[service.Name] = NewPlan(w.eurekaClient, service.Name, func(service *fargo.Application) error {
 			defer w.UpdateService()
@@ -222,9 +220,6 @@ func (w *watcher) subscribe(service *fargo.Application) error {
 }
 
 func (w *watcher) unsubscribe(serviceName string) error {
-	w.mutex.Lock()
-	defer w.mutex.Unlock()
-
 	if _, ok := w.watchers[serviceName]; !ok {
 		return fmt.Errorf("%s not found in watchers", serviceName)
 	}
@@ -256,13 +251,15 @@ func generateServiceEntry(app *fargo.Application) *v1alpha3.ServiceEntry {
 	endpoints := make([]*v1alpha3.WorkloadEntry, 0)
 
 	for _, instance := range app.Instances {
+		log.Infof("todo(lql): service is %v", instance)
+		p, _ := strconv.Atoi(strings.Split(instance.InstanceId, ":")[1])
 		protocol := common.HTTP
 		if val, _ := instance.Metadata.GetString("protocol"); val != "" {
 			protocol = common.ParseProtocol(val)
 		}
 		port := &v1alpha3.Port{
 			Name:     protocol.String(),
-			Number:   uint32(instance.Port),
+			Number:   uint32(p),
 			Protocol: protocol.String(),
 		}
 		if len(portList) == 0 {
