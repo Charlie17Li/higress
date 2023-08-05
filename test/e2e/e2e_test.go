@@ -52,7 +52,7 @@ func TestHigressConformanceTests(t *testing.T) {
 		GatewayAddress:       "localhost",
 	})
 
-	//cSuite.Setup(t)
+	cSuite.Setup(t)
 	var higressTests []suite.ConformanceTest
 
 	if *isWasmPluginTest {
