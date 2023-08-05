@@ -19,7 +19,7 @@ metadata:
   namespace: higress-conformance-infra
 spec:
   registries:
-    - domain: eureka.higress-system.svc.cluster.local
+    - domain: eureka.higress-conformance-infra.svc.cluster.local
       name: eureka
       port: 8761
       type: eureka
