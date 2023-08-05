@@ -34,7 +34,7 @@ var HTTPRouteEurekaRegistry = suite.ConformanceTest{
 			{
 				Request: http.AssertionRequest{
 					ActualRequest: http.Request{
-						Path:   "/eureka",
+						Path:   "/healthz",
 						Method: "GET",
 					},
 				},
