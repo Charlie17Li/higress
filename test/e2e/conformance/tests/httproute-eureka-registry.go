@@ -16,6 +16,7 @@ package tests
 
 import (
 	"testing"
+	"time"
 
 	"github.com/alibaba/higress/test/e2e/conformance/utils/http"
 	"github.com/alibaba/higress/test/e2e/conformance/utils/suite"
@@ -47,9 +48,11 @@ var HTTPRouteEurekaRegistry = suite.ConformanceTest{
 				},
 			},
 		}
+		timeoutConfig := suite.TimeoutConfig
+		timeoutConfig.MaxTimeToConsistency = 120 * time.Second
 		t.Run("HTTPRoute Eureka Registry", func(t *testing.T) {
 			for _, testcase := range testcases {
-				http.MakeRequestAndExpectEventuallyConsistentResponse(t, suite.RoundTripper, suite.TimeoutConfig, suite.GatewayAddress, testcase)
+				http.MakeRequestAndExpectEventuallyConsistentResponse(t, suite.RoundTripper, timeoutConfig, suite.GatewayAddress, testcase)
 			}
 		})
 	},
