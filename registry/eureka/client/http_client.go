@@ -67,8 +67,6 @@ func (e *eurekaHttpClient) ScheduleAppUpdates(name string, stop <-chan struct{})
 		}
 	}
 
-	consume(e.GetApplication(name))
-
 	go func() {
 		ticker := time.NewTicker(time.Duration(e.PollInterval) * time.Second)
 		defer ticker.Stop()

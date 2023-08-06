@@ -181,7 +181,7 @@ func (w *watcher) doFullRefresh() {
 
 	for serviceName := range fetchedServices {
 		if _, ok := w.WatchingServices[serviceName]; !ok {
-			if err = w.subscribe(serviceName); err != nil {
+			if err = w.subscribe(fetchedServices[serviceName]); err != nil {
 				log.Errorf("Failed to subscribe service %v, error : %v", serviceName, err)
 				continue
 			}
@@ -189,8 +189,8 @@ func (w *watcher) doFullRefresh() {
 	}
 }
 
-func (w *watcher) subscribe(serviceName string) error {
-	w.WatchingServices[serviceName] = NewPlan(w.eurekaClient, serviceName, func(service *fargo.Application) error {
+func (w *watcher) subscribe(service *fargo.Application) error {
+	callback := func(service *fargo.Application) error {
 		defer w.UpdateService()
 
 		if len(service.Instances) != 0 {
@@ -208,7 +208,10 @@ func (w *watcher) subscribe(serviceName string) error {
 		}
 
 		return nil
-	})
+	}
+
+	callback(service)
+	w.WatchingServices[service.Name] = NewPlan(w.eurekaClient, service.Name, callback)
 	return nil
 }
 
