@@ -1,6 +1,7 @@
 package eureka
 
 import (
+	"fmt"
 	"net"
 	"strconv"
 	"sync"
@@ -20,7 +21,7 @@ import (
 )
 
 const (
-	DefaultFullRefreshIntervalLimit = time.Second * 180
+	DefaultFullRefreshIntervalLimit = time.Second * 30
 	suffix                          = "eureka"
 )
 
@@ -120,7 +121,7 @@ func WithUpdateCacheWhenEmpty(enable bool) WatcherOption {
 }
 
 func (w *watcher) Run() {
-	ticker := time.NewTicker(DefaultFullRefreshIntervalLimit)
+	ticker := time.NewTicker(w.fullRefreshIntervalLimit)
 	defer ticker.Stop()
 
 	w.Status = provider.ProbeWatcherStatus(w.Domain, strconv.FormatUint(uint64(w.Port), 10))
@@ -144,10 +145,12 @@ func (w *watcher) Stop() {
 
 	for serviceName := range w.WatchingServices {
 		if err := w.unsubscribe(serviceName); err != nil {
-			delete(w.WatchingServices, serviceName)
+			log.Errorf("Failed to unsubscribe service : %v", serviceName)
+			continue
 		}
 		w.cache.DeleteServiceEntryWrapper(makeHost(serviceName))
 	}
+	w.UpdateService()
 }
 
 func (w *watcher) IsHealthy() bool {
@@ -190,6 +193,9 @@ func (w *watcher) doFullRefresh() {
 }
 
 func (w *watcher) subscribe(service *fargo.Application) error {
+	if service == nil {
+		return fmt.Errorf("service is nil")
+	}
 	callback := func(service *fargo.Application) error {
 		defer w.UpdateService()
 
