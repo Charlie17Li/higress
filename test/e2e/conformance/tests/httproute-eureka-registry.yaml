@@ -34,7 +34,7 @@ metadata:
 spec:
   ingressClassName: higress
   rules:
-    - host: "bar.com"
+    - host: "foo.com"
       http:
         paths:
           - pathType: Prefix
@@ -43,4 +43,4 @@ spec:
               resource:
                 apiGroup: networking.higress.io
                 kind: McpBridge
-                name: eureka-registry-provider
+                name: default

@@ -34,7 +34,7 @@ var HTTPRouteEurekaRegistry = suite.ConformanceTest{
 			{
 				Request: http.AssertionRequest{
 					ActualRequest: http.Request{
-						Host:   "bar.com",
+						Host:   "foo.com",
 						Path:   "/healthz",
 						Method: "GET",
 					},
@@ -47,7 +47,7 @@ var HTTPRouteEurekaRegistry = suite.ConformanceTest{
 				},
 			},
 		}
-		t.Run("HTTPRoute Consul HttpBin", func(t *testing.T) {
+		t.Run("HTTPRoute Eureka Registry", func(t *testing.T) {
 			for _, testcase := range testcases {
 				http.MakeRequestAndExpectEventuallyConsistentResponse(t, suite.RoundTripper, suite.TimeoutConfig, suite.GatewayAddress, testcase)
 			}
