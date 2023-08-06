@@ -201,6 +201,7 @@ func (w *watcher) subscribe(service *fargo.Application) error {
 				Suffix:       suffix,
 				RegistryType: w.Type,
 			})
+			return nil
 		}
 
 		if w.updateCacheWhenEmpty {
@@ -243,7 +244,6 @@ func generateServiceEntry(app *fargo.Application) *v1alpha3.ServiceEntry {
 	endpoints := make([]*v1alpha3.WorkloadEntry, 0)
 
 	for _, instance := range app.Instances {
-		log.Infof("todo(lql): service is %v", instance)
 		protocol := common.HTTP
 		if val, _ := instance.Metadata.GetString("protocol"); val != "" {
 			protocol = common.ParseProtocol(val)

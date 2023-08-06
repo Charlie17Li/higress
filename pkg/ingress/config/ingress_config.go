@@ -590,7 +590,7 @@ func (m *IngressConfig) convertServiceEntry([]common.WrapperConfig) []config.Con
 		return nil
 	}
 	serviceEntries := m.RegistryReconciler.GetAllServiceEntryWrapper()
-	IngressLog.Infof("Found http2rpc serviceEntries %s", serviceEntries)
+	IngressLog.Infof("Found http2rpc serviceEntries %v", serviceEntries)
 	out := make([]config.Config, 0, len(serviceEntries))
 	for _, se := range serviceEntries {
 		out = append(out, config.Config{

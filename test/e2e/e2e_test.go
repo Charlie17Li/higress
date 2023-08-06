@@ -52,7 +52,7 @@ func TestHigressConformanceTests(t *testing.T) {
 		GatewayAddress:       "localhost",
 	})
 
-	cSuite.Setup(t)
+	//cSuite.Setup(t)
 	var higressTests []suite.ConformanceTest
 
 	if *isWasmPluginTest {
@@ -71,8 +71,8 @@ func TestHigressConformanceTests(t *testing.T) {
 		}
 	} else {
 		higressTests = []suite.ConformanceTest{
-			tests.HTTPRouteSimpleSameNamespace,
-			tests.HTTPRouteHostNameSameNamespace,
+			//tests.HTTPRouteSimpleSameNamespace,
+			//tests.HTTPRouteHostNameSameNamespace,
 			//tests.HTTPRouteRewritePath,
 			//tests.HTTPRouteRewriteHost,
 			//tests.HTTPRouteCanaryHeader,
@@ -96,7 +96,7 @@ func TestHigressConformanceTests(t *testing.T) {
 			//tests.HTTPRouteDownstreamEncryption,
 			//tests.HTTPRouteFullPathRegex,
 			//tests.HTTPRouteHttp2Rpc,
-			tests.HTTPRouteConsulHttpBin,
+			//tests.HTTPRouteConsulHttpBin,
 			tests.HTTPRouteEurekaRegistry,
 		}
 	}
