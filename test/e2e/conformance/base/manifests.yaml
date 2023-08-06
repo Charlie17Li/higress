@@ -567,7 +567,5 @@ spec:
           path: /healthz
           port: 8888
           scheme: HTTP
-        periodSeconds: 20
-        successThreshold: 1
-        timeoutSeconds: 1
+        periodSeconds: 10
 
