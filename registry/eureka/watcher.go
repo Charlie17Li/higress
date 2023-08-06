@@ -1,10 +1,8 @@
 package eureka
 
 import (
-	"fmt"
 	"net"
 	"strconv"
-	"strings"
 	"sync"
 	"time"
 
@@ -22,7 +20,7 @@ import (
 )
 
 const (
-	DefaultFullRefreshIntervalLimit = time.Second * 30
+	DefaultFullRefreshIntervalLimit = time.Second * 180
 	suffix                          = "eureka"
 )
 
@@ -30,9 +28,9 @@ type watcher struct {
 	provider.BaseWatcher
 	apiv1.RegistryConfig
 
-	WatchingServices     map[string]*fargo.Application `json:"watching_services"`
-	RegistryType         provider.ServiceRegistryType  `json:"registry_type"`
-	Status               provider.WatcherStatus        `json:"status"`
+	WatchingServices     map[string]*Plan             `json:"watching_services"`
+	RegistryType         provider.ServiceRegistryType `json:"registry_type"`
+	Status               provider.WatcherStatus       `json:"status"`
 	cache                memory.Cache
 	mutex                *sync.Mutex
 	stop                 chan struct{}
@@ -40,7 +38,6 @@ type watcher struct {
 	isStop               bool
 	updateCacheWhenEmpty bool
 
-	watchers                  map[string]*Plan
 	eurekaClient              EurekaHttpClient
 	fullRefreshIntervalLimit  time.Duration
 	deltaRefreshIntervalLimit time.Duration
@@ -50,7 +47,7 @@ type WatcherOption func(w *watcher)
 
 func NewWatcher(cache memory.Cache, opts ...WatcherOption) (provider.Watcher, error) {
 	w := &watcher{
-		WatchingServices: make(map[string]*fargo.Application),
+		WatchingServices: make(map[string]*Plan),
 		RegistryType:     provider.Eureka,
 		Status:           provider.UnHealthy,
 		cache:            cache,
@@ -179,53 +176,45 @@ func (w *watcher) doFullRefresh() {
 				log.Errorf("Failed to unsubscribe service %v, error : %v", serviceName, err)
 				continue
 			}
-			delete(w.WatchingServices, serviceName)
 		}
 	}
 
 	for serviceName := range fetchedServices {
 		if _, ok := w.WatchingServices[serviceName]; !ok {
-			if err = w.subscribe(fetchedServices[serviceName]); err != nil {
+			if err = w.subscribe(serviceName); err != nil {
 				log.Errorf("Failed to subscribe service %v, error : %v", serviceName, err)
 				continue
 			}
-			w.WatchingServices[serviceName] = fetchedServices[serviceName]
 		}
 	}
 }
 
-func (w *watcher) subscribe(service *fargo.Application) error {
-	if _, ok := w.WatchingServices[service.Name]; !ok {
-		w.watchers[service.Name] = NewPlan(w.eurekaClient, service.Name, func(service *fargo.Application) error {
-			defer w.UpdateService()
+func (w *watcher) subscribe(serviceName string) error {
+	w.WatchingServices[serviceName] = NewPlan(w.eurekaClient, serviceName, func(service *fargo.Application) error {
+		defer w.UpdateService()
 
-			if len(service.Instances) != 0 {
-				se := generateServiceEntry(service)
-				w.cache.UpdateServiceEntryWrapper(makeHost(service.Name), &memory.ServiceEntryWrapper{
-					ServiceName:  service.Name,
-					ServiceEntry: se,
-					Suffix:       suffix,
-					RegistryType: w.Type,
-				})
-			}
+		if len(service.Instances) != 0 {
+			se := generateServiceEntry(service)
+			w.cache.UpdateServiceEntryWrapper(makeHost(service.Name), &memory.ServiceEntryWrapper{
+				ServiceName:  service.Name,
+				ServiceEntry: se,
+				Suffix:       suffix,
+				RegistryType: w.Type,
+			})
+		}
 
-			if w.updateCacheWhenEmpty {
-				w.cache.DeleteServiceEntryWrapper(makeHost(service.Name))
-			}
+		if w.updateCacheWhenEmpty {
+			w.cache.DeleteServiceEntryWrapper(makeHost(service.Name))
+		}
 
-			return nil
-		})
-	}
+		return nil
+	})
 	return nil
 }
 
 func (w *watcher) unsubscribe(serviceName string) error {
-	if _, ok := w.watchers[serviceName]; !ok {
-		return fmt.Errorf("%s not found in watchers", serviceName)
-	}
-
-	w.watchers[serviceName].Stop()
-	delete(w.watchers, serviceName)
+	w.WatchingServices[serviceName].Stop()
+	delete(w.WatchingServices, serviceName)
 	w.UpdateService()
 
 	return nil
@@ -252,14 +241,13 @@ func generateServiceEntry(app *fargo.Application) *v1alpha3.ServiceEntry {
 
 	for _, instance := range app.Instances {
 		log.Infof("todo(lql): service is %v", instance)
-		p, _ := strconv.Atoi(strings.Split(instance.InstanceId, ":")[1])
 		protocol := common.HTTP
 		if val, _ := instance.Metadata.GetString("protocol"); val != "" {
 			protocol = common.ParseProtocol(val)
 		}
 		port := &v1alpha3.Port{
 			Name:     protocol.String(),
-			Number:   uint32(p),
+			Number:   uint32(instance.Port),
 			Protocol: protocol.String(),
 		}
 		if len(portList) == 0 {

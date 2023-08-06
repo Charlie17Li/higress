@@ -53,12 +53,7 @@ func (e *eurekaHttpClient) GetApplications() (*Applications, error) {
 }
 
 func (e *eurekaHttpClient) GetApplication(name string) (*fargo.Application, error) {
-	apps, err := e.getApplications("/apps/" + name)
-	if err != nil {
-		return nil, err
-	}
-
-	return apps.Apps[name], nil
+	return e.getApplication("/apps/" + name)
 }
 
 func (e *eurekaHttpClient) ScheduleAppUpdates(name string, stop <-chan struct{}) <-chan fargo.AppUpdate {
@@ -75,7 +70,7 @@ func (e *eurekaHttpClient) ScheduleAppUpdates(name string, stop <-chan struct{})
 	consume(e.GetApplication(name))
 
 	go func() {
-		ticker := time.NewTicker(time.Duration(e.PollInterval))
+		ticker := time.NewTicker(time.Duration(e.PollInterval) * time.Second)
 		defer ticker.Stop()
 
 		for {
@@ -102,7 +97,7 @@ func (e *eurekaHttpClient) GetDelta() (*Applications, error) {
 func (c *eurekaHttpClient) getApplications(path string) (*Applications, error) {
 	res, code, err := c.request(path)
 	if err != nil {
-		log.Errorf("Failed to get application, err: %v", err)
+		log.Errorf("Failed to get applications, err: %v", err)
 		return nil, err
 	}
 
@@ -134,6 +129,26 @@ func (c *eurekaHttpClient) getApplications(path string) (*Applications, error) {
 		HashCode:     rj.Response.AppsHashcode,
 		VersionDelta: rj.Response.VersionsDelta,
 	}, nil
+}
+
+func (c *eurekaHttpClient) getApplication(path string) (*fargo.Application, error) {
+	res, code, err := c.request(path)
+	if err != nil {
+		log.Errorf("Failed to get application, err: %v", err)
+		return nil, err
+	}
+
+	if code != 200 {
+		log.Warnf("Failed to get application, http code : %v", code)
+	}
+
+	var rj fargo.GetAppResponseJson
+	if err = json.Unmarshal(res, &rj); err != nil {
+		log.Errorf("Failed to unmarshal response body to fargo.GetAppResponseJson, error: %v", err)
+		return nil, err
+	}
+
+	return &rj.Application, nil
 }
 
 func (c *eurekaHttpClient) request(urlPath string) ([]byte, int, error) {
