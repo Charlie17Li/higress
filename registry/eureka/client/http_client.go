@@ -158,7 +158,7 @@ func (c *eurekaHttpClient) request(urlPath string) ([]byte, int, error) {
 	}, retryConfig...)
 
 	if err != nil {
-		log.Errorf("Failed to get response from eureka, error : %v", err)
+		log.Errorf("Failed to get response from eureka-server, error : %v", err)
 		return nil, -1, err
 	}
 
@@ -173,5 +173,5 @@ func (c *eurekaHttpClient) request(urlPath string) ([]byte, int, error) {
 }
 
 func (c *eurekaHttpClient) getUrl(path string) string {
-	return c.BaseUrl + path
+	return "http://" + c.BaseUrl + "/eureka" + path
 }

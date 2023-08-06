@@ -16,7 +16,7 @@ apiVersion: networking.higress.io/v1
 kind: McpBridge
 metadata:
   name: default
-  namespace: higress-conformance-infra
+  namespace: higress-system
 spec:
   registries:
     - domain: eureka.higress-conformance-infra.svc.cluster.local
@@ -30,7 +30,7 @@ metadata:
   annotations:
     higress.io/destination: eureka-registry-provider.eureka
   name: httproute-eureka-ingress
-  namespace: higress-conformance-infra
+  namespace: higress-system
 spec:
   ingressClassName: higress
   rules:
