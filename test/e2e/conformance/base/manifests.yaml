@@ -475,22 +475,6 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: eureka-np
-  namespace: higress-conformance-infra
-  labels:
-    app: eureka
-spec:
-  type: NodePort
-  ports:
-    - port: 8761
-      nodePort: 30030
-      name: eureka
-  selector:
-    app: eureka
----
-apiVersion: v1
-kind: Service
-metadata:
   name: eureka
   namespace: higress-conformance-infra
   labels:
@@ -510,7 +494,7 @@ metadata:
   namespace: higress-conformance-infra
 spec:
   podManagementPolicy: Parallel
-  serviceName: 'eureka'
+  serviceName: eureka
   # n instances
   replicas: 1
   selector:
@@ -526,6 +510,8 @@ spec:
           image: bitinit/eureka
           ports:
             - containerPort: 8761
+              name: http
+              protocol: TCP
           env:
             - name: EUREKA_SERVER_ADDRESS
               valueFrom:
